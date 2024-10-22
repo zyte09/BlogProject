@@ -5,7 +5,7 @@ namespace BlogProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RandomController : ControllerBase
+    public class CommentController : ControllerBase
     {
     }
 }
