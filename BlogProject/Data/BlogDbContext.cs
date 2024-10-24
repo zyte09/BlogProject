@@ -3,15 +3,16 @@ using BlogProject.SampleModels;
 
 namespace BlogProject.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class BlogDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
-        {
-        }
-
+        public DbSet<Post> Posts { get; set; }
+        public DbSet<Article> Articles { get; set; }
         public DbSet<TextPost> TextPosts { get; set; }
         public DbSet<ImagePost> ImagePosts { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<User> Users { get; set; }
+
+        public BlogDbContext(DbContextOptions<BlogDbContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

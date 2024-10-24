@@ -6,6 +6,8 @@ namespace BlogProject.SampleModels
         public string Title { get; set; }
         public DateTime PublishDate { get; set; }
         public int AuthorID { get; set; }
+        public User Author { get; set; }
         public int TotalViews { get; set; }
+        public ICollection<Comment> Comments { get; set; }
     }
 }
