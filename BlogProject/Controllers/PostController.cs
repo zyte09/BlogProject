@@ -1,33 +1,32 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using BlogProject.Data;
-using BlogProject.SampleModels;
+﻿using BlogProject.SampleModels;
+using BlogProject.Services;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
-namespace BlogProject.Controllers
+namespace BlogProject_API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class PostController : ControllerBase
     {
-        private readonly BlogDbContext _context;
+        private readonly IPostManager _postManager;
 
-        public PostController(BlogDbContext context)
+        public PostController(IPostManager postManager)
         {
-            _context = context;
+            _postManager = postManager;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetPosts()
         {
-            var posts = await _context.Posts.Include(p => p.Author).ToListAsync();
+            var posts = await _postManager.GetAllPostsAsync();
             return Ok(posts);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPost(int id)
         {
-            var post = await _context.Posts.Include(p => p.Author).FirstOrDefaultAsync(p => p.PostID == id);
+            var post = await _postManager.GetPostByIdAsync(id);
             if (post == null)
             {
                 return NotFound();
@@ -35,30 +34,16 @@ namespace BlogProject.Controllers
             return Ok(post);
         }
 
-        [HttpPost("text")]
-        public async Task<IActionResult> CreateTextPost([FromBody] TextPost post)
+        [HttpPost]
+        public async Task<IActionResult> CreatePost([FromBody] Post post)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            _context.Posts.Add(post);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetPost), new { id = post.PostID }, post);
-        }
-
-        [HttpPost("image")]
-        public async Task<IActionResult> CreateImagePost([FromBody] ImagePost post)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            _context.Posts.Add(post);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetPost), new { id = post.PostID }, post);
+            var createdPost = await _postManager.CreatePostAsync(post);
+            return CreatedAtAction(nameof(GetPost), new { id = createdPost.PostID }, createdPost);
         }
 
         [HttpPut("{id}")]
@@ -69,18 +54,10 @@ namespace BlogProject.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(post).State = EntityState.Modified;
-            try
+            var result = await _postManager.UpdatePostAsync(post);
+            if (!result)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!_context.Posts.Any(p => p.PostID == id))
-                {
-                    return NotFound();
-                }
-                throw;
+                return NotFound();
             }
 
             return NoContent();
@@ -89,14 +66,12 @@ namespace BlogProject.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePost(int id)
         {
-            var post = await _context.Posts.FindAsync(id);
-            if (post == null)
+            var result = await _postManager.DeletePostAsync(id);
+            if (!result)
             {
                 return NotFound();
             }
 
-            _context.Posts.Remove(post);
-            await _context.SaveChangesAsync();
             return NoContent();
         }
     }
