@@ -21,13 +21,21 @@ namespace BlogProject.Services
             return await _context.Posts.Include(p => p.Author).Include(p => p.Comments).ToListAsync();
         }
 
-        public async Task<Post> GetPostByIdAsync(int id)
+        public async Task<Post?> GetPostByIdAsync(int id)
         {
             return await _context.Posts.Include(p => p.Author).Include(p => p.Comments).FirstOrDefaultAsync(p => p.PostID == id);
         }
 
-        public async Task<Post> CreatePostAsync(Post post)
+        public async Task<Post> CreatePostAsync(PostCreationDto postDto, int authorId)
         {
+            var post = new Post
+            {
+                Title = postDto.Title,
+                Description = postDto.Description,
+                PublishDate = DateTime.UtcNow,
+                AuthorID = authorId
+            };
+
             _context.Posts.Add(post);
             await _context.SaveChangesAsync();
             return post;

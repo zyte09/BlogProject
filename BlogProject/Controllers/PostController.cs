@@ -63,16 +63,7 @@ namespace BlogProject_API.Controllers
 
             _logger.LogInformation("User with ID {UserId} found: {UserName}", userId, user.UserName);
 
-            var post = new Post
-            {
-                Title = postDto.Title,
-                Description = postDto.Description,
-                PublishDate = DateTime.UtcNow,
-                AuthorID = user.UserID,
-                Author = user
-            };
-
-            var createdPost = await _postManager.CreatePostAsync(post);
+            var createdPost = await _postManager.CreatePostAsync(postDto, user.UserID);
             return CreatedAtAction(nameof(GetPost), new { id = createdPost.PostID }, createdPost);
         }
 

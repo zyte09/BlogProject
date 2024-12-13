@@ -12,7 +12,7 @@ using SampleManager;
 namespace BlogProject.Migrations
 {
     [DbContext(typeof(BlogDbContext))]
-    [Migration("20241213113459_InitialCreate")]
+    [Migration("20241213130706_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
