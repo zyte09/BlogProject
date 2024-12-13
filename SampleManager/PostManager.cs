@@ -1,4 +1,6 @@
 ﻿using BlogProject.SampleModels;
+using Microsoft.EntityFrameworkCore;
+using SampleManager;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,32 +9,36 @@ namespace BlogProject.Services
 {
     public class PostManager : IPostManager
     {
-        private readonly List<Post> _posts = new List<Post>();
+        private readonly BlogDbContext _context;
+
+        public PostManager(BlogDbContext context)
+        {
+            _context = context;
+        }
 
         public async Task<IEnumerable<Post>> GetAllPostsAsync()
         {
-            return await Task.FromResult(_posts);
+            return await _context.Posts.Include(p => p.Author).Include(p => p.Comments).ToListAsync();
         }
 
         public async Task<Post> GetPostByIdAsync(int id)
         {
-            var post = _posts.Find(p => p.PostID == id);
-            return await Task.FromResult(post);
+            return await _context.Posts.Include(p => p.Author).Include(p => p.Comments).FirstOrDefaultAsync(p => p.PostID == id);
         }
 
         public async Task<Post> CreatePostAsync(Post post)
         {
-            post.PostID = _posts.Count + 1;
-            _posts.Add(post);
-            return await Task.FromResult(post);
+            _context.Posts.Add(post);
+            await _context.SaveChangesAsync();
+            return post;
         }
 
         public async Task<bool> UpdatePostAsync(Post post)
         {
-            var existingPost = _posts.Find(p => p.PostID == post.PostID);
+            var existingPost = await _context.Posts.FindAsync(post.PostID);
             if (existingPost == null)
             {
-                return await Task.FromResult(false);
+                return false;
             }
 
             existingPost.Title = post.Title;
@@ -43,19 +49,22 @@ namespace BlogProject.Services
             existingPost.TotalViews = post.TotalViews;
             existingPost.Comments = post.Comments;
 
-            return await Task.FromResult(true);
+            _context.Posts.Update(existingPost);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         public async Task<bool> DeletePostAsync(int id)
         {
-            var post = _posts.Find(p => p.PostID == id);
+            var post = await _context.Posts.FindAsync(id);
             if (post == null)
             {
-                return await Task.FromResult(false);
+                return false;
             }
 
-            _posts.Remove(post);
-            return await Task.FromResult(true);
+            _context.Posts.Remove(post);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

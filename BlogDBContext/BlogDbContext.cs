@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using BlogProject.SampleModels;
+using System.Collections.Generic;
+using System.Reflection.Emit;
 
 namespace BlogProject.Data
 {
@@ -17,7 +19,6 @@ namespace BlogProject.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
         }
     }
 }

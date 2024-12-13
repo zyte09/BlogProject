@@ -1,4 +1,3 @@
-using BlogProject.Data;
 using BlogProject.Services;
 using SampleManager;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +16,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<BlogDbContext>(options =>
-       options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+       options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
+                            b => b.MigrationsAssembly("BlogProject")));
 
 builder.Services.AddScoped<IPostManager, PostManager>();
 builder.Services.AddScoped<IUserManager, UserManager>();
