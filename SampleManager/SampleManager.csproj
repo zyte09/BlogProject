@@ -17,6 +17,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SampleModels\SampleModels.csproj" />
-  </ItemGroup>
+</ItemGroup>
 
 </Project>

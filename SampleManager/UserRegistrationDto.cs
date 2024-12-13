@@ -1,10 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-namespace BlogProject.SampleModels
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SampleManager
 {
-    public class User
+    public class UserRegistrationDto
     {
-        public int UserID { get; set; }
         [Required]
         public string UserName { get; set; }
         [Required]
@@ -12,6 +16,5 @@ namespace BlogProject.SampleModels
         public string Email { get; set; }
         [Required]
         public string Password { get; set; }
-        public ICollection<Post> Posts { get; set; } = new List<Post>();
     }
 }

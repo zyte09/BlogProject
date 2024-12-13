@@ -1,7 +1,13 @@
 ﻿using BlogProject.SampleModels;
 using BlogProject.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using SampleManager;
+using Microsoft.AspNetCore.Identity;
+using System;
+using Microsoft.Extensions.Logging;
 
 namespace BlogProject_API.Controllers
 {
@@ -10,10 +16,14 @@ namespace BlogProject_API.Controllers
     public class PostController : ControllerBase
     {
         private readonly IPostManager _postManager;
+        private readonly IUserManager _userManager;
+        private readonly ILogger<PostController> _logger;
 
-        public PostController(IPostManager postManager)
+        public PostController(IPostManager postManager, IUserManager userManager, ILogger<PostController> logger)
         {
             _postManager = postManager;
+            _userManager = userManager;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -35,12 +45,32 @@ namespace BlogProject_API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreatePost([FromBody] Post post)
+        public async Task<IActionResult> CreatePost([FromBody] PostCreationDto postDto, [FromHeader(Name = "userId")] int userId)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+
+            _logger.LogInformation("Received request to create post for user ID: {UserId}", userId);
+
+            var user = await _userManager.GetUserByIdAsync(userId);
+            if (user == null)
+            {
+                _logger.LogWarning("User with ID {UserId} not found", userId);
+                return Unauthorized("Invalid user.");
+            }
+
+            _logger.LogInformation("User with ID {UserId} found: {UserName}", userId, user.UserName);
+
+            var post = new Post
+            {
+                Title = postDto.Title,
+                Description = postDto.Description,
+                PublishDate = DateTime.UtcNow,
+                AuthorID = user.UserID,
+                Author = user
+            };
 
             var createdPost = await _postManager.CreatePostAsync(post);
             return CreatedAtAction(nameof(GetPost), new { id = createdPost.PostID }, createdPost);

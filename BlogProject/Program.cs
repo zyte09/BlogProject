@@ -1,5 +1,6 @@
 using BlogProject.Data;
 using BlogProject.Services;
+using SampleManager;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
@@ -18,8 +19,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<BlogDbContext>(options =>
        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddControllers();
 builder.Services.AddScoped<IPostManager, PostManager>();
+builder.Services.AddScoped<IUserManager, UserManager>();
 
 var app = builder.Build();
 
