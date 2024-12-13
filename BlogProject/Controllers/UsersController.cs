@@ -37,7 +37,7 @@ namespace BlogProject.Controllers
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            return Ok(user);
+            return Ok(new { UserId = user.UserID });
         }
 
         [HttpPost("login")]
