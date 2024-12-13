@@ -14,9 +14,18 @@ BlogProject is a web application built with ASP.NET Core and Entity Framework Co
    ```bash
    git clone https://github.com/zyte09/BlogProject.git
 
-Project Structure
-BlogProject/Program.cs: Main entry point of the application.
-BlogProject/Data/BlogDbContext.cs: Defines the database context and data models.
-SampleManager/UserManager.cs: Manages user-related operations.
-BlogProject/Controllers/PostController.cs: Handles HTTP requests related to posts.
-BlogProject/BlogProject.csproj: Project file defining dependencies and project references.
+## Project Structure
+```BlogProject/
+├── Program.cs                 # Application entry point
+├── Data/
+│   └── BlogDbContext.cs      # Database context and models
+├── SampleManager/
+│   └── UserManager.cs        # User operations management
+├── Controllers/
+│   └── PostController.cs     # Blog post endpoints
+└── BlogProject.csproj        # Project configuration 
+```
+## Prerequisites
+- .NET 6.0 SDK or later
+- SQL Server (LocalDB or higher)
+- Visual Studio 2022 or VS Code
